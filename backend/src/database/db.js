@@ -3,6 +3,7 @@ import { dbConfig } from '../config/db.config.js';
 
 export const connectDB = async () => {
   try {
+    console.log("db config: ", dbConfig);
     await mongoose.connect(dbConfig.uri, dbConfig.options);
     console.log('✅ MongoDB connected successfully');
   } catch (error) {

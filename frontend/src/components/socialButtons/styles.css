@@ -1,0 +1,18 @@
+.social-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.social-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+

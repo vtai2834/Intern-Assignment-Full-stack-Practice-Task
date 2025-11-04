@@ -1,0 +1,46 @@
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.contactItem:last-child {
+  border-bottom: none;
+}
+
+.contactIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background-secondary);
+  font-size: 16px;
+}
+
+.contactName {
+  flex: 1;
+  font-size: 14px;
+  color: var(--color-foreground);
+}
+
+.contactCount {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-foreground-secondary);
+}
