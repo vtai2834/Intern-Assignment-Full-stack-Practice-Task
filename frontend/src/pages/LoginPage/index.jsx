@@ -2,9 +2,8 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom'
-import { login, clearError } from '../../store/slices/authSlice'
+import { useAuth } from '../../hooks/useAuth'
 import AuthLayout from '../../layouts/AuthLayout'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
@@ -19,9 +18,8 @@ const loginSchema = z.object({
 })
 
 const LoginPage = () => {
-  const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { loading, error } = useSelector((state) => state.auth)
+  const { login, loading, error, clearError } = useAuth()
 
   const {
     register,
@@ -32,14 +30,16 @@ const LoginPage = () => {
   })
 
   useEffect(() => {
+    // Clear error khi unmount
     return () => {
-      dispatch(clearError())
+      clearError()
     }
-  }, [dispatch])
+  }, [clearError])
 
   const onSubmit = async (data) => {
-    const result = await dispatch(login(data))
-    if (login.fulfilled.match(result)) {
+    const result = await login(data)
+    
+    if (result.success) {
       navigate('/dashboard')
     }
   }
@@ -106,4 +106,3 @@ const LoginPage = () => {
 }
 
 export default LoginPage
-

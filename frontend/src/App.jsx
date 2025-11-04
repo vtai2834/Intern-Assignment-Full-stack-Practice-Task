@@ -2,8 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
-import ProtectedRoute from './routes/ProtectedRoute'
 import HomePage from './pages/HomePage'
+import ProtectedRoute from './routes/ProtectedRoute'
+import DashboardLayout from './layouts/DashboardLayout'
 
 function App() {
   const { isAuthenticated } = useSelector((state) => state.auth)
@@ -19,10 +20,12 @@ function App() {
         element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <SignupPage />} 
       />
       <Route
-        path="/dashboard/*"
+        path="/dashboard"
         element={
           <ProtectedRoute>
-            <HomePage />
+            <DashboardLayout>
+              <HomePage />
+            </DashboardLayout>
           </ProtectedRoute>
         }
       />

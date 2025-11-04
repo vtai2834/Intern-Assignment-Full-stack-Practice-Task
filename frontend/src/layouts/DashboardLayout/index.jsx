@@ -1,18 +1,15 @@
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { logout } from '../../store/slices/authSlice'
+import { useSelector } from 'react-redux'
+import { useAuth } from '../../hooks/useAuth'
 import { Button } from '../../components/ui/Button'
 import { LogOut, User, Home } from 'lucide-react'
 import styles from './styles.module.css'
 
 const DashboardLayout = ({ children }) => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const { logout } = useAuth()
   const { user } = useSelector((state) => state.auth)
 
-  const handleLogout = async () => {
-    await dispatch(logout())
-    navigate('/login')
+  const handleLogout = () => {
+    logout()
   }
 
   return (
@@ -56,4 +53,3 @@ const DashboardLayout = ({ children }) => {
 }
 
 export default DashboardLayout
-

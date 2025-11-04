@@ -1,10 +1,20 @@
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { useAuth } from '../../hooks/useAuth'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card'
 import { User, Mail, Calendar } from 'lucide-react'
 import styles from './styles.module.css'
 
 const HomePage = () => {
   const { user } = useSelector((state) => state.auth)
+  const { getCurrentUser } = useAuth()
+
+  useEffect(() => {
+    // Refresh user data khi vào trang
+    if (!user) {
+      getCurrentUser()
+    }
+  }, []) // eslint-disable-line
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
@@ -109,9 +119,10 @@ const HomePage = () => {
               <li>JWT-based authentication with access and refresh tokens</li>
               <li>Secure password hashing with bcrypt</li>
               <li>Redis for token storage</li>
-              <li>MongoDB database</li>
+              <li>MongoDB database with Mongoose ODM</li>
               <li>React Hook Form with Zod validation</li>
               <li>Redux Toolkit for state management</li>
+              <li>Custom hooks for API calls</li>
               <li>Tailwind CSS & ShadCN UI components</li>
             </ul>
           </div>
@@ -122,4 +133,3 @@ const HomePage = () => {
 }
 
 export default HomePage
-

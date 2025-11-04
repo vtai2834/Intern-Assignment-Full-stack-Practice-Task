@@ -2,9 +2,8 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom'
-import { signup, clearError } from '../../store/slices/authSlice'
+import { useAuth } from '../../hooks/useAuth'
 import AuthLayout from '../../layouts/AuthLayout'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
@@ -24,9 +23,8 @@ const signupSchema = z.object({
 })
 
 const SignupPage = () => {
-  const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { loading, error } = useSelector((state) => state.auth)
+  const { signup, loading, error, clearError } = useAuth()
 
   const {
     register,
@@ -38,17 +36,19 @@ const SignupPage = () => {
   })
 
   useEffect(() => {
+    // Clear error khi unmount
     return () => {
-      dispatch(clearError())
+      clearError()
     }
-  }, [dispatch])
+  }, [clearError])
 
   const onSubmit = async (data) => {
     const { confirmPassword, ...signupData } = data
-    const result = await dispatch(signup(signupData))
+    const result = await signup(signupData)
     
-    if (signup.fulfilled.match(result)) {
+    if (result.success) {
       reset()
+      // Hiển thị success message (có thể dùng toast)
       setTimeout(() => {
         navigate('/login')
       }, 1500)
@@ -135,4 +135,3 @@ const SignupPage = () => {
 }
 
 export default SignupPage
-
