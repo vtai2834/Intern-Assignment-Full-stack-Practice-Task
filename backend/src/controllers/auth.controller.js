@@ -40,7 +40,15 @@ export const AuthController = {
       const { email, password } = req.body;
       const result = await AuthService.login({ email, password });
 
-      // Set refresh token as httpOnly cookie
+      // Set access token as httpOnly cookie (15 minutes)
+      res.cookie('accessToken', result.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 15 * 60 * 1000 // 15 minutes
+      });
+
+      // Set refresh token as httpOnly cookie (7 days)
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -52,8 +60,7 @@ export const AuthController = {
         success: true,
         message: 'Login successful',
         data: {
-          user: result.user,
-          accessToken: result.accessToken
+          user: result.user
         }
       });
     } catch (error) {
@@ -75,11 +82,17 @@ export const AuthController = {
 
       const result = await AuthService.refreshToken(refreshToken);
 
+      // Set new access token as httpOnly cookie
+      res.cookie('accessToken', result.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 15 * 60 * 1000 // 15 minutes
+      });
+
       res.status(200).json({
         success: true,
-        data: {
-          accessToken: result.accessToken
-        }
+        message: 'Token refreshed successfully'
       });
     } catch (error) {
       next(error);
@@ -95,7 +108,10 @@ export const AuthController = {
         await AuthService.logout(refreshToken);
       }
 
+      // Clear both cookies
+      res.clearCookie('accessToken');
       res.clearCookie('refreshToken');
+      
       res.status(200).json({
         success: true,
         message: 'Logout successful'

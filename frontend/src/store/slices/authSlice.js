@@ -4,37 +4,33 @@ import { createSlice } from '@reduxjs/toolkit'
 const loadUserFromStorage = () => {
   try {
     const user = localStorage.getItem('user')
-    const token = localStorage.getItem('accessToken')
-    if (user && token) {
-      return { user: JSON.parse(user), token }
+    if (user) {
+      return JSON.parse(user)
     }
   } catch (error) {
     console.error('Error loading user from storage:', error)
   }
-  return { user: null, token: null }
+  return null
 }
 
-const { user: initialUser, token: initialToken } = loadUserFromStorage()
+const initialUser = loadUserFromStorage()
 
 const initialState = {
   user: initialUser,
-  accessToken: initialToken,
-  isAuthenticated: !!initialToken,
+  isAuthenticated: !!initialUser,
 }
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    // Set user và token khi login thành công
-    setAuth: (state, action) => {
-      state.user = action.payload.user
-      state.accessToken = action.payload.accessToken
+    // Set user khi login thành công
+    setUser: (state, action) => {
+      state.user = action.payload
       state.isAuthenticated = true
       
       // Lưu vào localStorage
-      localStorage.setItem('user', JSON.stringify(action.payload.user))
-      localStorage.setItem('accessToken', action.payload.accessToken)
+      localStorage.setItem('user', JSON.stringify(action.payload))
     },
     
     // Cập nhật user info
@@ -44,17 +40,15 @@ const authSlice = createSlice({
     },
     
     // Clear auth khi logout
-    clearAuth: (state) => {
+    clearUser: (state) => {
       state.user = null
-      state.accessToken = null
       state.isAuthenticated = false
       
       // Xóa khỏi localStorage
       localStorage.removeItem('user')
-      localStorage.removeItem('accessToken')
     },
   },
 })
 
-export const { setAuth, updateUser, clearAuth } = authSlice.actions
+export const { setUser, updateUser, clearUser } = authSlice.actions
 export default authSlice.reducer

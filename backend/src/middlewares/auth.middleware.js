@@ -1,32 +1,49 @@
 import jwt from 'jsonwebtoken';
+import { getRedisClient } from '../config/redis.js';
 
-export const authenticate = (req, res, next) => {
+export const authenticate = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    // Lấy accessToken từ cookie
+    const accessToken = req.cookies.accessToken;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!accessToken) {
       return res.status(401).json({
         success: false,
         message: 'No token provided'
       });
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    // Verify JWT token
+    const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
 
-    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    // Kiểm tra token có tồn tại trong Redis không
+    const redisClient = getRedisClient();
+    const storedToken = await redisClient.get(`access_token:${decoded.id}`);
+
+    if (!storedToken || storedToken !== accessToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token',
+        code: 'TOKEN_INVALID'
+      });
+    }
+
+    // Attach user info to request
     req.user = decoded;
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token'
+        message: 'Invalid token',
+        code: 'TOKEN_INVALID'
       });
     }
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
-        message: 'Token expired'
+        message: 'Token expired',
+        code: 'TOKEN_EXPIRED'
       });
     }
     return res.status(500).json({
@@ -35,4 +52,3 @@ export const authenticate = (req, res, next) => {
     });
   }
 };
-

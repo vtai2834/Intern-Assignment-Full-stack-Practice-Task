@@ -47,8 +47,17 @@ export class AuthService {
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
 
-    // Store refresh token in Redis
+    // Store BOTH tokens in Redis
     const redisClient = getRedisClient();
+    
+    // Access token - 15 minutes
+    await redisClient.setEx(
+      `access_token:${user.id}`,
+      15 * 60, // 15 minutes
+      accessToken
+    );
+    
+    // Refresh token - 7 days
     await redisClient.setEx(
       `refresh_token:${user.id}`,
       7 * 24 * 60 * 60, // 7 days
@@ -86,6 +95,13 @@ export class AuthService {
 
       const accessToken = this.generateAccessToken(user);
 
+      // Update access token in Redis
+      await redisClient.setEx(
+        `access_token:${user.id}`,
+        15 * 60, // 15 minutes
+        accessToken
+      );
+
       return { accessToken };
     } catch (error) {
       if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
@@ -100,8 +116,9 @@ export class AuthService {
     try {
       const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
-      // Remove refresh token from Redis
+      // Remove BOTH tokens from Redis
       const redisClient = getRedisClient();
+      await redisClient.del(`access_token:${decoded.id}`);
       await redisClient.del(`refresh_token:${decoded.id}`);
     } catch (error) {
       // If token is invalid, just ignore
