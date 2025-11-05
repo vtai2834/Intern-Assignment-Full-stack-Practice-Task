@@ -1,0 +1,260 @@
+.timeRangeSelector {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background-color: hsl(var(--background));
+  position: fixed;
+  top: 64px;
+  right: 0;
+  z-index: 40;
+  transition: left 300ms ease-linear;
+}
+
+.timeRangeButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.timeRangeButton {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  color: hsl(var(--muted-foreground));
+  transition: all 0.2s;
+  font-weight: 400;
+}
+
+.timeRangeButton:hover {
+  color: hsl(var(--foreground));
+  opacity: 0.7;
+}
+
+.timeRangeButton.active {
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  border-bottom-color: hsl(var(--foreground));
+}
+
+.container {
+    margin-top: calc(64px + 48px + 1.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    padding-top: 0;
+}
+
+.leadCard {
+  width: 100%;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardHeaderCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  flex: 1;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  text-align: left;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  margin-top: 0.25rem;
+  text-align: center;
+}
+
+.metricsContainer {
+  display: flex;
+  align-items: center;
+}
+
+.metricsTabs {
+  display: flex;
+  padding: 0.25rem;
+  background-color: white;
+}
+
+.metricTab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  border-left: 1px solid #e3e3e3;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 80px;
+}
+
+
+
+.metricTab:hover {
+  background-color: hsl(var(--background));
+}
+
+.metricTab.active {
+  background-color: #f9f9fa;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.metricTabLabel {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metricTab.active .metricTabLabel {
+  color: hsl(var(--foreground));
+  font-weight: 600;
+}
+
+.metricTabValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.chartContainer {
+
+  height: 300px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.chartBar {
+  flex: 1;
+  background-color: #ff6b6b;
+  border-radius: 4px 4px 0 0;
+  min-height: 20px;
+  transition: opacity 0.2s;
+}
+
+.chartBar:hover {
+  opacity: 0.8;
+}
+
+.chartLabels {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.chartLabel {
+  flex: 1;
+  text-align: center;
+}
+
+.contactsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.cardTitle {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.contactsList {
+    padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.contactItem:hover {
+  background-color: hsl(var(--muted));
+}
+
+.contactIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contactIcon svg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.contactName {
+  flex: 1;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+}
+
+.visitCount {
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .contactsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeRangeSelector {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cardHeaderCenter {
+    align-items: flex-start;
+  }
+
+  .cardTitle,
+  .subtitle {
+    text-align: left;
+  }
+}

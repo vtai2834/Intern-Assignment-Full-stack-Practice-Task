@@ -1,66 +1,59 @@
-import { Search, Check, MoreHorizontal, Plus } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Search, Check, MoreHorizontal, Plus, Settings, User } from "lucide-react"
+import { PopoverContent } from "@/components/ui/popover"
 import { Input } from "@/components/ui/Input"
-import styles from "./organization-switcher.module.css"
+import { useSidebar } from "@/components/ui/sidebar"
+import "./organizationModal.css"
 
-interface OrganizationSwitcherProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
+export default function OrganizationSwitcher() {
+  const { state } = useSidebar()
+  const isCollapsed = state === "collapsed"
 
-export default function OrganizationSwitcher({ open, onOpenChange }: OrganizationSwitcherProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={styles.dialogContent}>
-        <DialogHeader>
-          <DialogTitle>Organizations</DialogTitle>
-        </DialogHeader>
+    <PopoverContent
+      align={isCollapsed ? "start" : "end"}
+      side="top"
+      className="popoverContent"
+      sideOffset={8}
+    >
+      <div className="searchContainer">
+        <div className="searchWrapper">
+          <Search size={16} className="searchIcon" />
+          <Input placeholder="Search..." className="searchInput" />
+        </div>
+      </div>
 
-        <div className={styles.searchContainer}>
-          <Input placeholder="Search..." className={styles.searchInput} prefix={<Search size={16} />} />
+      <div className="list">
+        <div className="orgItem">
+          <div className="orgIcon">v</div>
+          <div className="orgName">vtai</div>
+          <Check size={16} className="checkmark" />
         </div>
 
-        <div className={styles.list}>
-          <div className={styles.orgItem}>
-            <div className={styles.orgIcon}>v</div>
-            <div className={styles.orgName}>vtai</div>
-            <Check size={16} className={styles.checkmark} />
-          </div>
+        <button className="menuItem">
+          <MoreHorizontal size={16} />
+          All organizations
+        </button>
+      </div>
 
-          <div className={styles.divider}></div>
+      <div className="divider"></div>
 
-          <button className={styles.menuItem}>
-            <MoreHorizontal size={16} />
-            All organizations
-          </button>
-          <button className={styles.menuItem}>
-            <span className={styles.settingsIcon}>⚙️</span>
-            Account settings
-          </button>
-          <button className={styles.menuItem}>
-            <span className={styles.settingsIcon}>⚙️</span>
-            Organization settings
-          </button>
+      <div className="list">
+        <button className="menuItem">
+          <User size={16} />
+          Account settings
+        </button>
+        <button className="menuItem">
+          <Settings size={16} />
+          Organization settings
+        </button>
+        <button className="menuItem">
+          <Plus size={16} />
+          Add organization
+        </button>
+      </div>
 
-          <div className={styles.divider}></div>
+      <div className="divider"></div>
 
-          <button className={styles.menuItem}>
-            <Plus size={16} />
-            Add organization
-          </button>
-
-          <div className={styles.divider}></div>
-
-          <button className={styles.oauthButton}>
-            <span className={styles.googleIcon}>G</span>
-            Google
-          </button>
-          <button className={styles.oauthButton}>
-            <span className={styles.microsoftIcon}>M</span>
-            Microsoft
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    </PopoverContent>
   )
 }

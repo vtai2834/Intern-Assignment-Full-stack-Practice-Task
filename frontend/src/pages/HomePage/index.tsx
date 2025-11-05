@@ -1,137 +1,179 @@
-import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../store/store'
-import { useAuth } from '../../hooks/useAuth'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/Card'
-import { User, Mail, Calendar } from 'lucide-react'
-import styles from './styles.module.css'
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+import DashboardCalendar from "@/components/dashboard/calendar/calendar"
+import { useSidebar } from "@/components/ui/sidebar"
+import { brandLogos } from "@/constants/brandLogos"
+import { getInitials, getAvatarColor } from "@/constants/avatarUtils"
+import {
+  peopleChartData,
+  companiesChartData,
+  leadGenerationData,
+  mostVisitedContacts,
+  leastVisitedContacts,
+  timeRanges,
+} from "@/constants/homePageData"
+import "./home-page.css"
 
-const HomePage = () => {
-  const { user } = useSelector((state: RootState) => state.auth)
-  const { getCurrentUser } = useAuth()
+export default function HomePage() {
+  const [selectedRange, setSelectedRange] = useState("30d")
+  const [selectedMetric, setSelectedMetric] = useState<"people" | "companies">("people")
+  const [currentDate] = useState(new Date())
+  const { state } = useSidebar()
+  const sidebarWidth = state === "collapsed" ? "3rem" : "16rem"
 
-  useEffect(() => {
-    if (!user) {
-      getCurrentUser()
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const chartData = selectedMetric === "people" ? peopleChartData : companiesChartData
 
-  const formatDate = (dateString?: string): string => {
-    if (!dateString) return 'N/A'
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+  const chartConfig = {
+    value: {
+      label: "Value",
+      color: selectedMetric === "people" ? "#ff6b6b" : "#2a9d90",
+    },
+  } satisfies ChartConfig
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>Welcome back, {user?.name}!</h2>
-        <p className={styles.subtitle}>Here&apos;s your account overview</p>
+    <>
+      {/* Time Range Selector - Outside container */}
+      <div 
+        className="timeRangeSelector"
+        style={{ left: sidebarWidth }}
+      >
+        <div className="timeRangeButtons">
+          {timeRanges.map((range) => (
+            <button
+              key={range}
+              className={`timeRangeButton ${selectedRange === range ? "active" : ""}`}
+              onClick={() => setSelectedRange(range)}
+            >
+              {range}
+            </button>
+          ))}
+        </div>
+        <DashboardCalendar currentDate={currentDate} />
       </div>
 
-      <div className={styles.cardsGrid}>
-        {/* Profile Card */}
-        <Card>
+      <div className="container">
+        {/* Lead Generation Card */}
+        <Card className="leadCard">
           <CardHeader>
-            <CardTitle className={styles.cardTitle}>
-              <User className={styles.icon} />
-              Profile Information
-            </CardTitle>
-            <CardDescription>Your account details</CardDescription>
+            <div className="cardHeader">
+              <div className="cardHeaderCenter">
+                <CardTitle className="cardTitle">Lead generation</CardTitle>
+                <p className="subtitle">New contacts added to the pool.</p>
+              </div>
+              <div className="metricsContainer">
+                <div className="metricsTabs">
+                  <button
+                    className={`metricTab ${selectedMetric === "people" ? "active" : ""}`}
+                    onClick={() => setSelectedMetric("people")}
+                  >
+                    <span className="metricTabLabel">People</span>
+                    <span className="metricTabValue">{leadGenerationData.people}</span>
+                  </button>
+                  <button
+                    className={`metricTab ${selectedMetric === "companies" ? "active" : ""}`}
+                    onClick={() => setSelectedMetric("companies")}
+                  >
+                    <span className="metricTabLabel">Companies</span>
+                    <span className="metricTabValue">{leadGenerationData.companies}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className={styles.cardContent}>
-            <div className={styles.infoItem}>
-              <p className={styles.infoLabel}>Name</p>
-              <p className={styles.infoValue}>{user?.name || 'N/A'}</p>
-            </div>
-            <div className={styles.infoItem}>
-              <p className={styles.infoLabel}>Email</p>
-              <p className={styles.infoValueEmail}>
-                <Mail className={styles.mailIcon} />
-                {user?.email || 'N/A'}
-              </p>
-            </div>
+          <CardContent>
+            {/* Bar Chart */}
+            <ChartContainer config={chartConfig} id="lead-generation-chart" className="min-h-[200px] w-full">
+              <BarChart data={chartData} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <Bar dataKey="value" fill="var(--color-value)" radius={4} barSize={50} />
+              </BarChart>
+            </ChartContainer>
           </CardContent>
         </Card>
 
-        {/* Account Stats Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className={styles.cardTitle}>
-              <Calendar className={styles.icon} />
-              Account Stats
-            </CardTitle>
-            <CardDescription>Your account timeline</CardDescription>
-          </CardHeader>
-          <CardContent className={styles.cardContent}>
-            <div className={styles.infoItem}>
-              <p className={styles.infoLabel}>Member Since</p>
-              <p className={styles.infoValue}>
-                {formatDate(user?.createdAt)}
-              </p>
-            </div>
-            <div className={styles.infoItem}>
-              <p className={styles.infoLabel}>Last Updated</p>
-              <p className={styles.infoValue}>
-                {formatDate(user?.updatedAt)}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Contact Cards */}
+        <div className="contactsGrid">
+          <Card>
+            <CardHeader>
+              <CardTitle className="cardTitle">Most visited contacts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="contactsList">
+                {mostVisitedContacts.map((contact, idx) => (
+                  <div key={idx} className="contactItem">
+                    {contact.type === "brand" ? (
+                      <div className="contactIcon">
+                        {brandLogos[contact.brand]({ width: 24, height: 24 })}
+                      </div>
+                    ) : (
+                      <div
+                        className="contactIcon"
+                        style={{
+                          backgroundColor: getAvatarColor(contact.name),
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "0.6rem",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {getInitials(contact.name)}
+                      </div>
+                    )}
+                    <span className="contactName">{contact.name}</span>
+                    <span className="visitCount">{contact.visits}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Quick Stats Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Stats</CardTitle>
-            <CardDescription>Your activity summary</CardDescription>
-          </CardHeader>
-          <CardContent className={styles.cardContent}>
-            <div className={styles.statRow}>
-              <span className={styles.statLabel}>Account Status</span>
-              <span className={styles.badge}>Active</span>
-            </div>
-            <div className={styles.statRow}>
-              <span className={styles.statLabel}>User ID</span>
-              <span className={styles.statValue}>#{user?.id}</span>
-            </div>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="cardTitle">Least visited contacts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="contactsList">
+                {leastVisitedContacts.map((contact, idx) => (
+                  <div key={idx} className="contactItem">
+                    {contact.type === "brand" ? (
+                      <div className="contactIcon">
+                        {brandLogos[contact.brand]({ width: 24, height: 24 })}
+                      </div>
+                    ) : (
+                      <div
+                        className="contactIcon"
+                        style={{
+                          backgroundColor: getAvatarColor(contact.name),
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "0.6rem",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {getInitials(contact.name)}
+                      </div>
+                    )}
+                    <span className="contactName">{contact.name}</span>
+                    <span className="visitCount">{contact.visits}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      {/* Welcome Message */}
-      <Card className={styles.welcomeCard}>
-        <CardHeader>
-          <CardTitle>Getting Started</CardTitle>
-          <CardDescription>Welcome to your dashboard</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className={styles.welcomeText}>
-            This is a simple authentication demo application built with React, Redux Toolkit, 
-            Express.js, MongoDB, and Redis. You can explore the features and see how 
-            everything works together.
-          </p>
-          <div className={styles.featuresBox}>
-            <h4 className={styles.featuresTitle}>Features included:</h4>
-            <ul className={styles.featuresList}>
-              <li>JWT-based authentication with access and refresh tokens</li>
-              <li>Secure password hashing with bcrypt</li>
-              <li>Redis for token storage</li>
-              <li>MongoDB database with Mongoose ODM</li>
-              <li>React Hook Form with Zod validation</li>
-              <li>Redux Toolkit for state management</li>
-              <li>Custom hooks for API calls</li>
-              <li>TypeScript for type safety</li>
-              <li>Tailwind CSS & ShadCN UI components</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    </>
   )
 }
-
-export default HomePage
-

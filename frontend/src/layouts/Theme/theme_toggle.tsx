@@ -32,7 +32,7 @@ export default function ThemeToggle() {
 
   return (
     <Button variant="ghost" size="icon" onClick={toggleTheme} className={styles.themeToggle} aria-label="Toggle theme">
-      {isDark ? <Sun className={styles.icon} /> : <Moon className={styles.icon} />}
+      {isDark ? <Moon className={styles.icon} /> : <Sun className={styles.icon} />}
     </Button>
   )
 }

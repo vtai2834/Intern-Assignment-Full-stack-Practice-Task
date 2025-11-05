@@ -1,12 +1,28 @@
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useState } from "react"
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/Button"
-import styles from "./dashboard-calendar.module.css"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import styles from "./calendar.module.css"
 
 interface DashboardCalendarProps {
-  currentDate: Date
+  currentDate?: Date
 }
 
-export default function DashboardCalendar({ currentDate }: DashboardCalendarProps) {
+export default function DashboardCalendar({}: DashboardCalendarProps) {
+  const [open, setOpen] = useState(false)
+  const [startDate, setStartDate] = useState<Date>(new Date(2025, 9, 6)) // Oct 6, 2025
+  const [endDate, setEndDate] = useState<Date>(new Date(2025, 10, 5)) // Nov 5, 2025
+  const [displayMonth, setDisplayMonth] = useState(new Date(2025, 9, 1)) // October 2025
+  const [selectingStart, setSelectingStart] = useState(true)
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })
+  }
+
+  const formatDateRange = () => {
+    return `${formatDate(startDate)} - ${formatDate(endDate)}`
+  }
+
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
   }
@@ -15,34 +31,98 @@ export default function DashboardCalendar({ currentDate }: DashboardCalendarProp
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay()
   }
 
-  const renderCalendar = (date: Date) => {
-    const daysInMonth = getDaysInMonth(date)
-    const firstDay = getFirstDayOfMonth(date)
-    const monthName = date.toLocaleDateString("en-US", { month: "long", year: "numeric" })
+  const isDateInRange = (date: Date) => {
+    return date >= startDate && date <= endDate
+  }
+
+
+  const handleDateClick = (day: number, month: Date) => {
+    const clickedDate = new Date(month.getFullYear(), month.getMonth(), day)
+    
+    if (selectingStart || clickedDate < startDate) {
+      setStartDate(clickedDate)
+      setEndDate(clickedDate)
+      setSelectingStart(false)
+    } else {
+      setEndDate(clickedDate)
+      setSelectingStart(true)
+    }
+  }
+
+  const handleToday = () => {
+    const today = new Date()
+    setStartDate(today)
+    setEndDate(today)
+    setDisplayMonth(new Date(today.getFullYear(), today.getMonth(), 1))
+    setSelectingStart(true)
+  }
+
+  const handleClear = () => {
+    const today = new Date()
+    setStartDate(today)
+    setEndDate(today)
+    setSelectingStart(true)
+  }
+
+  const handleApply = () => {
+    setOpen(false)
+  }
+
+  const handlePrevMonth = () => {
+    setDisplayMonth(new Date(displayMonth.getFullYear(), displayMonth.getMonth() - 1, 1))
+  }
+
+  const handleNextMonth = () => {
+    setDisplayMonth(new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1, 1))
+  }
+
+  const renderCalendar = (month: Date) => {
+    const daysInMonth = getDaysInMonth(month)
+    const firstDay = getFirstDayOfMonth(month)
+    const monthName = month.toLocaleDateString("en-US", { month: "long", year: "numeric" })
     const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
     const cells = []
 
-    // Empty cells
+    // Empty cells for previous month
+    const prevMonthDays = getDaysInMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))
     for (let i = 0; i < firstDay; i++) {
+      const day = prevMonthDays - firstDay + i + 1
+      const date = new Date(month.getFullYear(), month.getMonth() - 1, day)
+      const inRange = isDateInRange(date)
+      
       cells.push(
-        <div key={`empty-${i}`} className={styles.emptyCell}>
-          {date.getMonth() === 0
-            ? getDaysInMonth(new Date(date.getFullYear() - 1, 11)) - firstDay + i + 1
-            : getDaysInMonth(new Date(date.getFullYear(), date.getMonth() - 1)) - firstDay + i + 1}
+        <div key={`empty-${i}`} className={`${styles.emptyCell} ${inRange ? styles.inRange : ""}`}>
+          {day}
         </div>,
       )
     }
 
     // Calendar days
     for (let i = 1; i <= daysInMonth; i++) {
-      const isCurrentDay =
-        i === currentDate.getDate() &&
-        date.getMonth() === currentDate.getMonth() &&
-        date.getFullYear() === currentDate.getFullYear()
+      const date = new Date(month.getFullYear(), month.getMonth(), i)
+      const inRange = isDateInRange(date)
+      const isSelected = date.getTime() === startDate.getTime() || date.getTime() === endDate.getTime()
 
       cells.push(
-        <div key={`day-${i}`} className={`${styles.dayCell} ${isCurrentDay ? styles.currentDay : ""}`}>
+        <div
+          key={`day-${i}`}
+          className={`${styles.dayCell} ${inRange ? styles.inRange : ""} ${isSelected ? styles.selected : ""}`}
+          onClick={() => handleDateClick(i, month)}
+        >
+          {i}
+        </div>,
+      )
+    }
+
+    // Empty cells for next month
+    const remainingCells = 42 - cells.length // 6 rows * 7 days
+    for (let i = 1; i <= remainingCells; i++) {
+      const date = new Date(month.getFullYear(), month.getMonth() + 1, i)
+      const inRange = isDateInRange(date)
+      
+      cells.push(
+        <div key={`next-${i}`} className={`${styles.emptyCell} ${inRange ? styles.inRange : ""}`}>
           {i}
         </div>,
       )
@@ -50,7 +130,15 @@ export default function DashboardCalendar({ currentDate }: DashboardCalendarProp
 
     return (
       <div className={styles.monthContainer}>
-        <h3 className={styles.monthTitle}>{monthName}</h3>
+        <div className={styles.monthHeader}>
+          <Button variant="ghost" size="icon" className={styles.navButton} onClick={handlePrevMonth}>
+            <ChevronLeft size={16} />
+          </Button>
+          <h3 className={styles.monthTitle}>{monthName}</h3>
+          <Button variant="ghost" size="icon" className={styles.navButton} onClick={handleNextMonth}>
+            <ChevronRight size={16} />
+          </Button>
+        </div>
         <div className={styles.daysHeader}>
           {days.map((day) => (
             <div key={day} className={styles.dayHeader}>
@@ -63,33 +151,45 @@ export default function DashboardCalendar({ currentDate }: DashboardCalendarProp
     )
   }
 
-  const prevMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-  const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+  const nextMonth = new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1, 1)
 
   return (
-    <div className={styles.calendar}>
-      <div className={styles.header}>
-        <Button variant="ghost" size="icon" className={styles.navButton}>
-          <ChevronLeft size={16} />
-        </Button>
-        <Button variant="ghost" size="icon" className={styles.navButton}>
-          <ChevronRight size={16} />
-        </Button>
-      </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className={styles.calendarTrigger}>
+          <CalendarIcon size={16} />
+          <span>{formatDateRange()}</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className={styles.popoverContent + " w-90"} align="start" sideOffset={8}>
+        <div className={styles.calendarContainer}>
+          {/* Top Section */}
+          <div className={styles.topSection}>
+            <Button variant="ghost" size="sm" onClick={handleToday} className={styles.topButton}>
+              Today
+            </Button>
+            <div className={styles.dateRangeDisplay}>
+              {formatDateRange()}
+            </div>
+            <Button variant="ghost" size="sm" onClick={handleClear} className={styles.topButton}>
+              Clear
+            </Button>
+          </div>
 
-      <div className={styles.months}>
-        {currentDate.getDate() > 15 && currentDate.getMonth() === 10 ? (
-          <>
-            {renderCalendar(currentDate)}
+          {/* Calendar Section */}
+          <div className={styles.months}>
+            {renderCalendar(displayMonth)}
             {renderCalendar(nextMonth)}
-          </>
-        ) : (
-          <>
-            {renderCalendar(prevMonth)}
-            {renderCalendar(currentDate)}
-          </>
-        )}
-      </div>
-    </div>
+          </div>
+
+          {/* Bottom Section */}
+          <div className={styles.bottomSection}>
+            <Button onClick={handleApply} className={styles.applyButton}>
+              Apply
+            </Button>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   )
 }
