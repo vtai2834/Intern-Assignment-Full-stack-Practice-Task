@@ -636,7 +636,7 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 
-Intern Assignment Project
+Phan Van Tai
 
 ## 🙏 Acknowledgments
 
