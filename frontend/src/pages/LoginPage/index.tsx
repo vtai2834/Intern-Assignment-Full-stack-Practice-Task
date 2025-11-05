@@ -11,9 +11,9 @@ import { Input } from '../../components/ui/Input'
 import { Label } from '../../components/ui/Label'
 import { Alert, AlertDescription } from '../../components/ui/Alert'
 import { AlertCircle } from 'lucide-react'
-import ThemeToggle from '../../layouts/Theme/theme_toggle'
+import ThemeToggle from '../../layouts/Theme/themeToggle'
 import SocialButtons from '../../components/socialButtons'
-import './login_page.css'
+import './loginPage.css'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),

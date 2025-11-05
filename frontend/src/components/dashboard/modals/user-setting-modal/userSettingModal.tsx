@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button"
 import "./userSettingModal.css"
 import { useSidebar } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/useAuth"
+import { useTheme } from "@/hooks/useTheme"
 
 interface UserMenuProps {
   onOpenChange: (open: boolean) => void
@@ -13,6 +14,7 @@ export default function UserMenu({ onOpenChange }: UserMenuProps) {
   const { state } = useSidebar()
   const isCollapsed = state === "collapsed"
   const { logout } = useAuth()
+  const { theme, setTheme } = useTheme()
 
   const handleSignOut = async () => {
     await logout()
@@ -65,9 +67,36 @@ export default function UserMenu({ onOpenChange }: UserMenuProps) {
           <div className="menuItemContent">
             <span>Theme</span>
             <div className="shortcut themeIcons">
-              <Monitor size={16} />
-              <Sun size={16} />
-              <Moon size={16} />
+              <button
+                className={`themeIconButton ${theme === "system" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setTheme("system")
+                }}
+                title="System"
+              >
+                <Monitor size={16} />
+              </button>
+              <button
+                className={`themeIconButton ${theme === "light" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setTheme("light")
+                }}
+                title="Light"
+              >
+                <Sun size={16} />
+              </button>
+              <button
+                className={`themeIconButton ${theme === "dark" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setTheme("dark")
+                }}
+                title="Dark"
+              >
+                <Moon size={16} />
+              </button>
             </div>
           </div>
         </button>

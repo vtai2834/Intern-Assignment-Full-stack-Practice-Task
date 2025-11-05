@@ -1,5 +1,5 @@
 import { Button } from '../ui/Button'
-import './styles.css'
+import './button.css'
 
 const SocialButtons = () => {
   return (

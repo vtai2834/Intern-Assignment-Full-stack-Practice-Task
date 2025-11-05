@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import styles from "./calendar.module.css"
+import "./calendar.css"
 
 interface DashboardCalendarProps {
   currentDate?: Date
@@ -92,7 +92,7 @@ export default function DashboardCalendar({}: DashboardCalendarProps) {
       const inRange = isDateInRange(date)
       
       cells.push(
-        <div key={`empty-${i}`} className={`${styles.emptyCell} ${inRange ? styles.inRange : ""}`}>
+        <div key={`empty-${i}`} className={`emptyCell ${inRange ? "inRange" : ""}`}>
           {day}
         </div>,
       )
@@ -107,7 +107,7 @@ export default function DashboardCalendar({}: DashboardCalendarProps) {
       cells.push(
         <div
           key={`day-${i}`}
-          className={`${styles.dayCell} ${inRange ? styles.inRange : ""} ${isSelected ? styles.selected : ""}`}
+          className={`dayCell ${inRange ? "inRange" : ""} ${isSelected ? "selected" : ""}`}
           onClick={() => handleDateClick(i, month)}
         >
           {i}
@@ -122,31 +122,31 @@ export default function DashboardCalendar({}: DashboardCalendarProps) {
       const inRange = isDateInRange(date)
       
       cells.push(
-        <div key={`next-${i}`} className={`${styles.emptyCell} ${inRange ? styles.inRange : ""}`}>
+        <div key={`next-${i}`} className={`emptyCell ${inRange ? "inRange" : ""}`}>
           {i}
         </div>,
       )
     }
 
     return (
-      <div className={styles.monthContainer}>
-        <div className={styles.monthHeader}>
-          <Button variant="ghost" size="icon" className={styles.navButton} onClick={handlePrevMonth}>
+      <div className="monthContainer">
+        <div className="monthHeader">
+          <Button variant="ghost" size="icon" className="navButton" onClick={handlePrevMonth}>
             <ChevronLeft size={16} />
           </Button>
-          <h3 className={styles.monthTitle}>{monthName}</h3>
-          <Button variant="ghost" size="icon" className={styles.navButton} onClick={handleNextMonth}>
+          <h3 className="monthTitle">{monthName}</h3>
+          <Button variant="ghost" size="icon" className="navButton" onClick={handleNextMonth}>
             <ChevronRight size={16} />
           </Button>
         </div>
-        <div className={styles.daysHeader}>
+        <div className="daysHeader">
           {days.map((day) => (
-            <div key={day} className={styles.dayHeader}>
+            <div key={day} className="dayHeader">
               {day}
             </div>
           ))}
         </div>
-        <div className={styles.daysGrid}>{cells}</div>
+        <div className="daysGrid">{cells}</div>
       </div>
     )
   }
@@ -156,35 +156,39 @@ export default function DashboardCalendar({}: DashboardCalendarProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className={styles.calendarTrigger}>
+        <button className="calendarTrigger">
           <CalendarIcon size={16} />
           <span>{formatDateRange()}</span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className={styles.popoverContent + " w-90"} align="start" sideOffset={8}>
-        <div className={styles.calendarContainer}>
+      <PopoverContent 
+        className="popoverContent" 
+        align="start" 
+        sideOffset={8}
+      >
+        <div className="calendarContainer">
           {/* Top Section */}
-          <div className={styles.topSection}>
-            <Button variant="ghost" size="sm" onClick={handleToday} className={styles.topButton}>
+          <div className="topSection">
+            <Button variant="ghost" size="sm" onClick={handleToday} className="topButton">
               Today
             </Button>
-            <div className={styles.dateRangeDisplay}>
+            <div className="dateRangeDisplay">
               {formatDateRange()}
             </div>
-            <Button variant="ghost" size="sm" onClick={handleClear} className={styles.topButton}>
+            <Button variant="ghost" size="sm" onClick={handleClear} className="topButton">
               Clear
             </Button>
           </div>
 
           {/* Calendar Section */}
-          <div className={styles.months}>
+          <div className="months">
             {renderCalendar(displayMonth)}
             {renderCalendar(nextMonth)}
           </div>
 
           {/* Bottom Section */}
-          <div className={styles.bottomSection}>
-            <Button onClick={handleApply} className={styles.applyButton}>
+          <div className="bottomSection">
+            <Button onClick={handleApply} className="applyButton">
               Apply
             </Button>
           </div>

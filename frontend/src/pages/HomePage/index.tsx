@@ -14,7 +14,7 @@ import {
   leastVisitedContacts,
   timeRanges,
 } from "@/constants/homePageData"
-import "./home-page.css"
+import "./homePage.css"
 
 export default function HomePage() {
   const [selectedRange, setSelectedRange] = useState("30d")

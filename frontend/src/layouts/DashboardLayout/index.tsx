@@ -2,7 +2,7 @@ import type React from "react"
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar"
 import AppSidebar from "@/components/dashboard/sidebar"
 import DashboardHeader from "@/components/dashboard/header/header.tsx"
-import "./dashboard-layout.css"
+import "./dashboardLayout.css"
 
 function MainContent({ children }: { children: React.ReactNode }) {
   const { state } = useSidebar()

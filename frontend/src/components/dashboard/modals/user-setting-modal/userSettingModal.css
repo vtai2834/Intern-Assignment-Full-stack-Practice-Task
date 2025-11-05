@@ -77,11 +77,35 @@
 
 .themeIcons {
   display: flex;
-  gap: 10px;
+  gap: 0;
   font-size: 12px;
-  padding: 10px;
+  padding: 2px;
   border: 1px solid #dfdfdf;
   border-radius: 50px;
+  background-color: var(--color-background);
+}
+
+.themeIconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50px;
+  transition: all 0.2s;
+  color: var(--color-foreground-secondary);
+}
+
+.themeIconButton:hover {
+  color: var(--color-foreground);
+  background-color: var(--color-background-hover);
+}
+
+.themeIconButton.active {
+  color: #fafafa;
+  background-color:rgb(114, 114, 129);
 }
 
 .shortcut {

@@ -11,9 +11,9 @@ import { Input } from '../../components/ui/Input'
 import { Label } from '../../components/ui/Label'
 import { Alert, AlertDescription } from '../../components/ui/Alert'
 import { AlertCircle } from 'lucide-react'
-import ThemeToggle from '../../layouts/Theme/theme_toggle'
+import ThemeToggle from '../../layouts/Theme/themeToggle'
 import SocialButtons from '../../components/socialButtons'
-import './signup_page.css'
+import './signUpPage.css'
 
 const signupSchema = z.object({
   name: z.string().min(1, 'Name must be at least 2 characters'),

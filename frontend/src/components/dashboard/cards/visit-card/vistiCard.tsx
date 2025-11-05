@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
-import styles from "./contact-card.module.css"
+import "./visitCard.css"
 
 interface Contact {
   name: string
@@ -15,15 +15,15 @@ export default function ContactCard({ title, contacts }: ContactCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={styles.title}>{title}</CardTitle>
+        <CardTitle className="title">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className={styles.contactList}>
+        <div className="contactList">
           {contacts.map((contact, idx) => (
-            <div key={idx} className={styles.contactItem}>
-              <div className={styles.contactIcon}>🎯</div>
-              <span className={styles.contactName}>{contact.name}</span>
-              <span className={styles.contactCount}>{contact.count}</span>
+            <div key={idx} className="contactItem">
+              <div className="contactIcon">🎯</div>
+              <span className="contactName">{contact.name}</span>
+              <span className="contactCount">{contact.count}</span>
             </div>
           ))}
         </div>

@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './styles.module.css'
+import './authLayout.css'
 
 interface AuthLayoutProps {
   children: React.ReactNode
@@ -7,8 +7,8 @@ interface AuthLayoutProps {
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   return (
-    <div className={styles.container}>
-      <div className={styles.wrapper}>
+    <div className="container">
+      <div className="wrapper">
         {children}
       </div>
     </div>

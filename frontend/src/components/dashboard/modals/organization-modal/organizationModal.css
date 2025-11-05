@@ -4,7 +4,8 @@
 }
 
 .searchContainer {
-  padding: 12px;
+  padding: 5px;
+
 }
 
 .searchWrapper {
@@ -26,6 +27,8 @@
 .searchInput {
   padding-left: 2.75rem;
   font-size: 14px;
+  border-radius: 5px;
+  border: none;
 }
 
 .list {
@@ -40,7 +43,7 @@
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  background-color: hsl(var(--accent));
+  background-color: hsl(var(--background));
   border-radius: 6px;
   cursor: pointer;
 }
@@ -73,9 +76,12 @@
 
 .divider {
   height: 1px;
-  background-color: hsl(var(--border));
+  background: hsl(var(--border));
+  width: 100%;
   margin: 8px 0;
+  display: block;
 }
+
 
 .menuItem {
   display: flex;
