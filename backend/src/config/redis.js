@@ -1,22 +1,55 @@
+// Load environment variables FIRST
+import './env.js';
+
 import { createClient } from 'redis';
 
 let redisClient = null;
 
 export const connectRedis = async () => {
   try {
-    const isCloud = !!process.env.REDIS_HOST && process.env.REDIS_HOST.includes('redns.redis-cloud.com');
+    // Ưu tiên dùng REDIS_URL nếu có (Render, Heroku, etc. thường cung cấp URL này)
+    if (process.env.REDIS_URL) {
+      const url = process.env.REDIS_URL;
+      const useTLS = url.startsWith('rediss://');
+      
+      console.log(`🔗 Connecting to Redis via URL (TLS: ${useTLS})`);
+      
+      redisClient = createClient({
+        url,
+        socket: useTLS
+          ? { 
+              tls: true,
+              rejectUnauthorized: false // Bỏ verify cert cho cloud services
+            }
+          : {},
+      });
+    } else {
+      // Fallback: dùng REDIS_HOST, REDIS_PORT nếu không có REDIS_URL
+      // Dùng object config trực tiếp như Redis Cloud recommend
+      const host = process.env.REDIS_HOST || 'localhost';
+      const port = parseInt(process.env.REDIS_PORT || '6379', 10);
+      const username = process.env.REDIS_USERNAME || 'default';
+      const password = process.env.REDIS_PASSWORD;
+      
+      // Kiểm tra REDIS_TLS env variable để force enable/disable TLS
+      // Mặc định không dùng TLS (Redis Cloud thường không cần TLS)
+      const useTLS = process.env.REDIS_TLS === 'true';
 
-    // Nếu là Redis Cloud → dùng rediss:// (TLS)
-    const url = isCloud
-      ? `rediss://${process.env.REDIS_USERNAME || 'default'}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
-      : `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`;
+      console.log(`🔗 Connecting to Redis: ${host}:${port} (TLS: ${useTLS})`);
 
-    redisClient = createClient({
-      url,
-      socket: isCloud
-        ? { rejectUnauthorized: false } // Bỏ verify cert nếu là Redis Cloud
-        : {}, // Local thì không cần TLS
-    });
+      redisClient = createClient({
+        username: username,
+        password: password,
+        socket: {
+          host: host,
+          port: port,
+          ...(useTLS ? { 
+            tls: true,
+            rejectUnauthorized: false // Bỏ verify cert cho cloud services
+          } : {})
+        }
+      });
+    }
 
     redisClient.on('error', (err) => {
       console.error('❌ Redis Client Error:', err);

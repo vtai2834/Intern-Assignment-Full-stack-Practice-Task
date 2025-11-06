@@ -1,3 +1,6 @@
+// Load environment variables FIRST
+import '../config/env.js';
+
 import mongoose from 'mongoose';
 import { dbConfig } from '../config/db.config.js';
 

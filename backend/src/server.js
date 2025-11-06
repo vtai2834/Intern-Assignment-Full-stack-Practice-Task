@@ -1,8 +1,10 @@
+// Load environment variables FIRST before any other imports
+import './config/env.js';
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 
 import authRoutes from './routes/auth.routes.js';
@@ -11,7 +13,7 @@ import { errorHandler } from './middlewares/error.middleware.js';
 import { connectDB } from './database/db.js';
 import { connectRedis } from './config/redis.js';
 
-dotenv.config();
+// dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
