@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // Index for faster email lookups
-userSchema.index({ email: 1 });
+// userSchema.index({ email: 1 });
 
 // Virtual field to rename _id to id
 userSchema.virtual('id').get(function () {
