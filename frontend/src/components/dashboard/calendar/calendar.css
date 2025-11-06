@@ -16,7 +16,7 @@
   background-color: hsl(var(--muted));
 }
 
-.popoverContent {
+.popoverContentCalendar {
   padding: 0;
   width: auto !important;
   min-width: 400px !important;

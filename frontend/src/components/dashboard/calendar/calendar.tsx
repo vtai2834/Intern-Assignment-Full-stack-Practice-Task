@@ -162,7 +162,7 @@ export default function DashboardCalendar({}: DashboardCalendarProps) {
         </button>
       </PopoverTrigger>
       <PopoverContent 
-        className="popoverContent" 
+        className="popoverContentCalendar" 
         align="start" 
         sideOffset={8}
       >
