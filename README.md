@@ -515,56 +515,56 @@ Authorization: Bearer <access_token>
 
 ## 📸 Screenshots & Demo
 
-### Application Screenshots
+### Demo Links
 
-**Login Page:**
-- Clean, modern login interface
-- Form validation with error messages
-- Social authentication buttons (UI only)
-- Theme toggle button
+**Live Application:**
+- **Frontend (Vercel):** [https://intern-assignment-full-stack-practi.vercel.app/](https://intern-assignment-full-stack-practi.vercel.app/)
+- **Backend API (Render):** [https://vtai2834-be-assignment-devsammurai.onrender.com](https://vtai2834-be-assignment-devsammurai.onrender.com)
 
-**Dashboard:**
-- Responsive sidebar with navigation
-- Header with user info and action buttons
-- Time range selector with calendar picker
-- Lead generation metrics with interactive charts
-- Contact management cards
-- Theme switching (Light/Dark/System)
+**Note:** All services are deployed on free tier plans, so initial load times may be slower due to cold starts.
 
-**User Settings:**
-- Profile management
-- Theme selection
-- Account settings
-- Sign out functionality
-
-### Demo Link
-
-> **Note:** If deployed, add the live demo link here.
-> 
-> Example: [Live Demo](https://your-app-url.vercel.app)
+### Screenshots
+Some screenshots demo app in folder /screenshots
 
 ### Deployment Instructions
 
-**Frontend (Vercel recommended):**
+**Frontend (Vercel):**
 1. Push code to GitHub
 2. Import project in Vercel
 3. Set environment variables:
-   - `VITE_API_URL=https://your-api-url.com/api`
+   - `VITE_API_URL=https://vtai2834-be-assignment-devsammurai.onrender.com/api`
 4. Deploy
 
-**Backend (Railway/Render recommended):**
+**Backend (Render):**
 1. Push code to GitHub
-2. Create new service on Railway/Render
-3. Set environment variables:
-   - MongoDB connection string
-   - Redis connection string
-   - JWT secrets
-   - CORS origin
-4. Deploy
+2. Create new Web Service on Render
+3. Set build command: `cd backend && npm install`
+4. Set start command: `cd backend && npm start`
+5. Set environment variables:
+   - `NODE_ENV=production`
+   - `PORT=5000` (or let Render assign automatically)
+   - `MONGODB_URI=mongodb+srv://...` (MongoDB Atlas connection string)
+   - `REDIS_HOST=...` (Redis Cloud host)
+   - `REDIS_PORT=...` (Redis Cloud port)
+   - `REDIS_USERNAME=default`
+   - `REDIS_PASSWORD=...` (Redis Cloud password)
+   - `REDIS_TLS=false` (or `true` if Redis Cloud requires TLS)
+   - `JWT_ACCESS_SECRET=...` (your secret key)
+   - `JWT_REFRESH_SECRET=...` (your secret key)
+   - `JWT_ACCESS_EXPIRES_IN=15m`
+   - `JWT_REFRESH_EXPIRES_IN=7d`
+   - `CLIENT_URL=https://intern-assignment-full-stack-practi.vercel.app`
+6. Deploy
 
 **Database & Redis:**
-- MongoDB: Use MongoDB Atlas (free tier available)
-- Redis: Use Upstash or Redis Cloud (free tier available)
+- **MongoDB:** Hosted on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (Free tier - M0 cluster)
+- **Redis:** Hosted on [Redis Cloud](https://redis.com/try-free/) (Free tier - 30MB storage)
+
+**Note:** All services are using free tier plans, which may have limitations:
+- Cold start delays (especially on Render)
+- Limited resources (CPU, memory, storage)
+- Rate limiting on free tiers
+- Slower response times compared to paid plans
 
 ## 📝 Additional Notes
 
