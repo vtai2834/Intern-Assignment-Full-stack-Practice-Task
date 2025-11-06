@@ -26,20 +26,24 @@ export const useAuth = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   // Đăng ký
   const signup = async (userData: SignupData): Promise<AuthResult> => {
     try {
       setLoading(true)
       setError(null)
+      setSuccess(null)
       
       await authAPI.signup(userData)
       
+      setSuccess('Account created successfully! Redirecting to login...')
       setLoading(false)
       return { success: true }
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Signup failed'
       setError(errorMessage)
+      setSuccess(null)
       setLoading(false)
       return { success: false, error: errorMessage }
     }
@@ -50,6 +54,7 @@ export const useAuth = () => {
     try {
       setLoading(true)
       setError(null)
+      setSuccess(null)
       
       const response = await authAPI.login(credentials)
       const { user } = response.data.data
@@ -57,12 +62,17 @@ export const useAuth = () => {
       // Chỉ lưu user vào Redux (tokens đã ở trong cookies)
       dispatch(setUser(user))
       
+      setSuccess('Login successful! Redirecting...')
       setLoading(false)
       return { success: true, data: { user } }
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Login failed'
+      console.log('Login error caught:', err)
+      console.log('Error message:', errorMessage)
       setError(errorMessage)
+      setSuccess(null)
       setLoading(false)
+      console.log('Error state set to:', errorMessage)
       return { success: false, error: errorMessage }
     }
   }
@@ -104,14 +114,21 @@ export const useAuth = () => {
     setError(null)
   }
 
+  // Clear success
+  const clearSuccess = (): void => {
+    setSuccess(null)
+  }
+
   return {
     loading,
     error,
+    success,
     signup,
     login,
     logout,
     getCurrentUser,
     clearError,
+    clearSuccess,
   }
 }
 

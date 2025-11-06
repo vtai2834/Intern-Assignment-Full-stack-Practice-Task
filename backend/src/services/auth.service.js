@@ -12,6 +12,7 @@ export class AuthService {
     if (existingUser) {
       const error = new Error('Email already registered');
       error.statusCode = 400;
+      error.code = 'EMAIL_EXISTS';
       throw error;
     }
 
@@ -32,6 +33,7 @@ export class AuthService {
     if (!user) {
       const error = new Error('Invalid email or password');
       error.statusCode = 401;
+      error.code = 'INVALID_CREDENTIALS';
       throw error;
     }
 
@@ -40,6 +42,7 @@ export class AuthService {
     if (!isPasswordValid) {
       const error = new Error('Invalid email or password');
       error.statusCode = 401;
+      error.code = 'INVALID_CREDENTIALS';
       throw error;
     }
 

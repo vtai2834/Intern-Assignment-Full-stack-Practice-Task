@@ -9,8 +9,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Label } from '../../components/ui/Label'
-import { Alert, AlertDescription } from '../../components/ui/Alert'
-import { AlertCircle } from 'lucide-react'
 import ThemeToggle from '../../layouts/Theme/themeToggle'
 import SocialButtons from '../../components/socialButtons'
 import './loginPage.css'
@@ -24,7 +22,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const { login, loading, error, clearError } = useAuth()
+  const { login, loading, error, success, clearError, clearSuccess } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
 
   const {
@@ -35,18 +33,30 @@ const LoginPage = () => {
     resolver: zodResolver(loginSchema),
   })
 
+  // Debug: log error state khi nó thay đổi
+  useEffect(() => {
+    console.log('Error state changed in LoginPage:', error)
+  }, [error])
+
+  // Clear error/success khi component unmount
   useEffect(() => {
     return () => {
       clearError()
+      clearSuccess()
     }
-  }, [clearError])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const onSubmit = async (data: LoginFormData) => {
     const result = await login(data)
     
     if (result.success) {
-      navigate('/dashboard')
+      // Delay navigate để user thấy success message
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 2000)
     }
+
   }
 
   return (
@@ -68,12 +78,18 @@ const LoginPage = () => {
 
         <CardContent className="login-cardContent">
           <form onSubmit={handleSubmit(onSubmit)} className="login-form">
-            {/* Error Alert */}
+            {/* Success Message */}
+            {success && (
+              <div className="login-message login-messageSuccess">
+                {success}
+              </div>
+            )}
+
+            {/* Error Message */}
             {error && (
-              <Alert variant="destructive" className="login-errorAlert">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+              <div className="login-message login-messageError">
+                {error}
+              </div>
             )}
 
             {/* Email Field */}

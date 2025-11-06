@@ -18,6 +18,9 @@ import { connectRedis } from './config/redis.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy - cần thiết cho Render và các cloud providers có reverse proxy
+app.set('trust proxy', true);
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -63,6 +66,15 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+
+// 404 handler - phải đặt trước error handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found',
+    code: 'NOT_FOUND'
+  });
+});
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

@@ -9,8 +9,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Label } from '../../components/ui/Label'
-import { Alert, AlertDescription } from '../../components/ui/Alert'
-import { AlertCircle } from 'lucide-react'
 import ThemeToggle from '../../layouts/Theme/themeToggle'
 import SocialButtons from '../../components/socialButtons'
 import './signUpPage.css'
@@ -25,7 +23,7 @@ type SignupFormData = z.infer<typeof signupSchema>
 
 const SignupPage = () => {
   const navigate = useNavigate()
-  const { signup, loading, error, clearError } = useAuth()
+  const { signup, loading, error, success, clearError, clearSuccess } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
 
   const {
@@ -68,20 +66,24 @@ const SignupPage = () => {
     return { text: 'All requirements met.', met: true }
   }, [password])
 
+  // Clear error/success khi component unmount
   useEffect(() => {
     return () => {
       clearError()
+      clearSuccess()
     }
-  }, [clearError])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const onSubmit = async (data: SignupFormData) => {
     const result = await signup(data)
     
     if (result.success) {
       reset()
+      // Delay navigate để user thấy success message
       setTimeout(() => {
         navigate('/login')
-      }, 1500)
+      }, 2000)
     }
   }
 
@@ -104,12 +106,18 @@ const SignupPage = () => {
 
         <CardContent className="signup-cardContent">
           <form onSubmit={handleSubmit(onSubmit)} className="signup-form">
-            {/* Error Alert */}
+            {/* Success Message */}
+            {success && (
+              <div className="signup-message signup-messageSuccess">
+                {success}
+              </div>
+            )}
+
+            {/* Error Message */}
             {error && (
-              <Alert variant="destructive" className="signup-errorAlert">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+              <div className="signup-message signup-messageError">
+                {error}
+              </div>
             )}
 
             {/* Name Field */}

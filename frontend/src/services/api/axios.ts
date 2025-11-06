@@ -3,7 +3,7 @@ import { store } from '../../store/store'
 import { clearUser } from '../../store/slices/authSlice'
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://vtai2834-be-assignment-devsammurai.onrender.com/api',
   withCredentials: true, // Quan trọng: Tự động gửi cookies
   headers: {
     'Content-Type': 'application/json',
@@ -44,7 +44,11 @@ apiClient.interceptors.response.use(
     }
 
     // Nếu error 401 nhưng không phải TOKEN_EXPIRED (ví dụ: TOKEN_INVALID)
-    if (error.response?.status === 401) {
+    // Không redirect nếu là login/signup request (để hiển thị error message)
+    const isAuthRequest = originalRequest?.url?.includes('/auth/login') || 
+                          originalRequest?.url?.includes('/auth/signup')
+    
+    if (error.response?.status === 401 && !isAuthRequest) {
       store.dispatch(clearUser())
       window.location.href = '/login'
     }
