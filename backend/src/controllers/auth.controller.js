@@ -41,19 +41,23 @@ export const AuthController = {
       const result = await AuthService.login({ email, password });
 
       // Set access token as httpOnly cookie (15 minutes)
+      // Trong production, cần sameSite: 'none' và secure: true cho cross-origin
+      const isProduction = process.env.NODE_ENV === 'production';
       res.cookie('accessToken', result.accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 15 * 60 * 1000 // 15 minutes
+        secure: isProduction, // HTTPS only trong production
+        sameSite: isProduction ? 'none' : 'lax', // 'none' cho cross-origin, 'lax' cho same-site
+        maxAge: 15 * 60 * 1000, // 15 minutes
+        path: '/', // Set path để cookie available cho tất cả routes
       });
 
       // Set refresh token as httpOnly cookie (7 days)
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        secure: isProduction, // HTTPS only trong production
+        sameSite: isProduction ? 'none' : 'lax', // 'none' cho cross-origin, 'lax' cho same-site
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        path: '/', // Set path để cookie available cho tất cả routes
       });
 
       res.status(200).json({
@@ -83,11 +87,13 @@ export const AuthController = {
       const result = await AuthService.refreshToken(refreshToken);
 
       // Set new access token as httpOnly cookie
+      const isProduction = process.env.NODE_ENV === 'production';
       res.cookie('accessToken', result.accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 15 * 60 * 1000 // 15 minutes
+        secure: isProduction, // HTTPS only trong production
+        sameSite: isProduction ? 'none' : 'lax', // 'none' cho cross-origin, 'lax' cho same-site
+        maxAge: 15 * 60 * 1000, // 15 minutes
+        path: '/', // Set path để cookie available cho tất cả routes
       });
 
       res.status(200).json({
@@ -108,9 +114,20 @@ export const AuthController = {
         await AuthService.logout(refreshToken);
       }
 
-      // Clear both cookies
-      res.clearCookie('accessToken');
-      res.clearCookie('refreshToken');
+      // Clear both cookies - cần set cùng options như khi set cookie
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.clearCookie('accessToken', {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        path: '/',
+      });
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        path: '/',
+      });
       
       res.status(200).json({
         success: true,
