@@ -26,9 +26,29 @@ const limiter = rateLimit({
 
 // Middleware
 app.use(helmet());
+
+// CORS Configuration - hỗ trợ multiple origins
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map(url => url.trim())
+  : ['http://localhost:5173']; // Default cho local dev
+
 app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true
+  origin: (origin, callback) => {
+    // Cho phép requests không có origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+
+    // Kiểm tra nếu origin có trong allowedOrigins
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      // Log để debug
+      console.warn(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -52,7 +72,7 @@ const startServer = async () => {
   try {
     await connectDB();
     await connectRedis();
-    
+
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV}`);
