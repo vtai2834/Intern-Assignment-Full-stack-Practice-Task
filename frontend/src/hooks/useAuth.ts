@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import * as authAPI from '../services/api/auth'
-import { setUser, clearUser, updateUser, User } from '../store/slices/authSlice'
+import { setUser, clearUser, User } from '../store/slices/authSlice'
 
 interface SignupData {
   name: string
@@ -97,8 +97,8 @@ export const useAuth = () => {
       const response = await authAPI.getCurrentUser()
       const user = response.data.data.user
       
-      // Update Redux
-      dispatch(updateUser(user))
+      // Set user và isAuthenticated trong Redux
+      dispatch(setUser(user))
       
       return { success: true, data: { user } }
     } catch (err) {
